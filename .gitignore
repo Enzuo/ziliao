@@ -1,0 +1,10 @@
+# generated
+node_modules
+
+# misc
+.DS_Store
+
+# config
+config/*
+!config/default.toml
+
