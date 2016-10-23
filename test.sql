@@ -6,14 +6,8 @@ INSERT INTO "User"
 ;
 
 INSERT INTO "Knowledge"
-  ( "problem", "solution" ) VALUES
-  ( 'prob 1' , 'sol 1'    )
- ,( 'prob 2' , 'sol 2'    )
+  ( "problem", "solution" , "idAuthor") VALUES
+  ( 'prob 1' , 'sol 1'    , 1         )
+ ,( 'prob 2' , 'sol 2'    , 2         )
+ ,( 'prob 21', 'sol 21'   , 2         )
 ;
-
-INSERT INTO "User_Knowledge" 
-  ( "idUser" , "idKnowledge" ) VALUES
-  ( 1        , 1             )
- ,( 2        , 2             )
-;
-
