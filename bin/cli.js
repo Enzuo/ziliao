@@ -27,9 +27,9 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 		password: database.password
 	})
 
-	var subcommand = sub[0]
+	var subcommand = sub[ 0 ]
 	switch (true) {
-		case /^\d+$/.test(subcommand):
+		case /^\d+$/.test( subcommand ):
 			console.log( info( 'migrating base to version', subcommand ))
 			getDatabaseVersions().then( (versions) => {
 				return promptly.confirm( `Migrate from ${versions.current} to ${subcommand} ? (y/n)` )
@@ -38,7 +38,7 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 			}).catch( (err) => {
 				console.log( error( err ))
 			})
-			break;
+			break
 
 		case subcommand === 'create':
 			promptly.prompt( 'Migration title :', { 
@@ -60,7 +60,7 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 			}).catch( (err) => {
 				console.log( error( err ))
 			})
-			break;
+			break
 
 		default:
 			console.log( info( 'migrating base to last version' ))
@@ -75,8 +75,8 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 })
 
 const flags = args.parse( process.argv );
-if ( Object.keys( flags ).length !== 0 ) {
-	args.showHelp();
+if (Object.keys( flags ).length !== 0) {
+	args.showHelp()
 }
 
 

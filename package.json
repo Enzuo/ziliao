@@ -23,6 +23,8 @@
     "toml": "^2.3.0"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "eslint": "^3.8.1",
+    "eslint-plugin-aero": "file:../eslint-plugin-aero"
   }
 }
