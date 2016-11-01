@@ -1,10 +1,10 @@
+'use strict'
+
 const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt } = require( 'graphql' )
 
-console.log('require User')
-const User = require( './User' ).instance
-console.log("user", User)
+const User = require( './User' )
 
-exports.default = new GraphQLObjectType({
+const Knowledge = new GraphQLObjectType({
 	name: 'Knowledge',
 	sqlTable: '"Knowledge"',
 	uniqueKey: 'id',
@@ -27,4 +27,4 @@ exports.default = new GraphQLObjectType({
 	})
 })
 
-// module.exports = Knowledge
+module.exports = Knowledge
