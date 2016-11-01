@@ -29,48 +29,48 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 
 	var subcommand = sub[ 0 ]
 	switch (true) {
-		case /^\d+$/.test( subcommand ):
-			console.log( info( 'migrating base to version', subcommand ))
-			getDatabaseVersions().then( (versions) => {
-				return promptly.confirm( `Migrate from ${versions.current} to ${subcommand} ? (y/n)` )
-			}).then( (shouldContinue) => {
-				doMigration( subcommand, shouldContinue )
-			}).catch( (err) => {
-				console.log( error( err ))
-			})
-			break
+	case /^\d+$/.test( subcommand ):
+		console.log( info( 'migrating base to version', subcommand ))
+		getDatabaseVersions().then( (versions) => {
+			return promptly.confirm( `Migrate from ${versions.current} to ${subcommand} ? (y/n)` )
+		}).then( (shouldContinue) => {
+			doMigration( subcommand, shouldContinue )
+		}).catch( (err) => {
+			console.log( error( err ))
+		})
+		break
 
-		case subcommand === 'create':
-			promptly.prompt( 'Migration title :', { 
-				validator : titleValidator 
-			}).then( (title) => {	
-				return promptly.prompt( 'Decription :' ).then( (description) => {
-					return { description, title }
-				})
-			}).then( (infos) => {
-				let stamp = (new Date).getTime()
-				Promise.all([
-					writeFile( `${migrationsDir}/${stamp}.do.${infos.title}.sql`, `/* ${infos.description} */` ),
-				    writeFile( `${migrationsDir}/${stamp}.undo.${infos.title}.sql`, `/* ${infos.description} */` )
-				]).then( (paths) => {
-					console.log( paths )
-				}).catch( (err) => {
-					console.log( error( err ))
-				})
+	case subcommand === 'create':
+		promptly.prompt( 'Migration title :', { 
+			validator : titleValidator 
+		}).then( (title) => {	
+			return promptly.prompt( 'Decription :' ).then( (description) => {
+				return { description, title }
+			})
+		}).then( (infos) => {
+			let stamp = (new Date).getTime()
+			Promise.all([
+				writeFile( `${migrationsDir}/${stamp}.do.${infos.title}.sql`, `/* ${infos.description} */` ),
+				writeFile( `${migrationsDir}/${stamp}.undo.${infos.title}.sql`, `/* ${infos.description} */` )
+			]).then( (paths) => {
+				console.log( paths )
 			}).catch( (err) => {
 				console.log( error( err ))
 			})
-			break
+		}).catch( (err) => {
+			console.log( error( err ))
+		})
+		break
 
-		default:
-			console.log( info( 'migrating base to last version' ))
-			getDatabaseVersions().then( (versions) => {
-				return promptly.confirm( `Migrate from ${versions.current} to ${versions.max} ? (y/n)` )
-			}).then( (shouldContinue) => {
-				doMigration( 'max', shouldContinue )
-			}).catch( (err) => {
-				console.log( error( err ))
-			})
+	default:
+		console.log( info( 'migrating base to last version' ))
+		getDatabaseVersions().then( (versions) => {
+			return promptly.confirm( `Migrate from ${versions.current} to ${versions.max} ? (y/n)` )
+		}).then( (shouldContinue) => {
+			doMigration( 'max', shouldContinue )
+		}).catch( (err) => {
+			console.log( error( err ))
+		})
 	}
 })
 
