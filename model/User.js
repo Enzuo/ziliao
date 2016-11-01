@@ -1,5 +1,5 @@
 const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt } = require( 'graphql' )
-
+const { forwardConnectionArgs, connectionDefinitions } = require( 'graphql-relay' )
 
 const User = new GraphQLObjectType({
 	name: 'User',
@@ -22,8 +22,11 @@ const User = new GraphQLObjectType({
 
 //for circular dependancy
 function knowledgeList () {
-	let Knowledge = require( './Knowledge' )
+	let { Knowledge } = require( './Knowledge' )
 	return new GraphQLList( Knowledge )
 }
 
-module.exports = User
+const { connectionType: UserConnection } = connectionDefinitions({ nodeType: User })
+
+
+module.exports = { User, UserConnection }

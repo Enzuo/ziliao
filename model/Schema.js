@@ -3,8 +3,8 @@ const { GraphQLSchema } = require( 'graphql' )
 const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt } = require( 'graphql' )
 
 const db = require( './database' )
-const User = require( './User' )
-const Knowledge = require( './Knowledge' )
+const { User } = require( './User' )
+const { Knowledge, KnowledgeConnection } = require( './Knowledge' )
 
 const helpers = require( './helpers' )
 
@@ -30,15 +30,22 @@ const QueryRoot = new GraphQLObjectType({
 			},
 		},
 		knowledges: {
-			type: new GraphQLList( Knowledge ),
+			type: KnowledgeConnection,
 			args: {
 				search: { type: GraphQLString },
+				first: { type: GraphQLInt },
 			},
+			sqlPaginate: true,
+			sortKey: {
+        		order: 'desc',
+        		key: [ 'dateUpdated', 'id' ]
+      		},
 			resolve: (parent, args, context, resolveInfo) => {
+				// console.log("resolve", resolveInfo, args)
 				return joinMonster( resolveInfo, {}, sql => {
 					console.log( sql )
 					return db.query( sql )
-				})
+				}, { dialect : 'pg' })
 			},
 			where: (knowledgeTable, args, context) => {
 				if (args.search) {

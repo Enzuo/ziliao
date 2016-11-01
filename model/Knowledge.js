@@ -1,8 +1,9 @@
 'use strict'
 
 const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt } = require( 'graphql' )
+const { forwardConnectionArgs, connectionDefinitions } = require( 'graphql-relay' )
 
-const User = require( './User' )
+const { User } = require( './User' )
 
 const helpers = require( './helpers' )
 
@@ -38,4 +39,7 @@ const Knowledge = new GraphQLObjectType({
 	})
 })
 
-module.exports = Knowledge
+
+const { connectionType: KnowledgeConnection } = connectionDefinitions({ nodeType: Knowledge })
+
+module.exports = { Knowledge, KnowledgeConnection }
