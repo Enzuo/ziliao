@@ -6,8 +6,9 @@ INSERT INTO "User"
 ;
 
 INSERT INTO "Knowledge"
-  ( "problem", "solution" , "idAuthor") VALUES
-  ( 'prob 1' , 'sol 1'    , 1         )
- ,( 'prob 2' , 'sol 2'    , 2         )
- ,( 'prob 21', 'sol 21'   , 2         )
+  ( "problem", "solution" , "idAuthor", "dateCreated", "dateUpdated" ) VALUES
+  ( 'prob 1' , 'sol 1'    , 1         , '20111005'   , '20121005'    )
+ ,( 'prob 2' , 'sol 2'    , 2         , DEFAULT      , DEFAULT       )
+ ,( 'prob 21', 'sol 21'   , 2         , DEFAULT      , DEFAULT       )
+ ,( 'err  22', 'banfa 21' , 1         , '20131004'   , '20131004'    )
 ;
