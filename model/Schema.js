@@ -6,6 +6,8 @@ const db = require( './database' )
 const User = require( './User' )
 const Knowledge = require( './Knowledge' )
 
+const helpers = require( './helpers' )
+
 const QueryRoot = new GraphQLObjectType({
 	name: 'Query',
 	fields: () => ({
@@ -22,24 +24,27 @@ const QueryRoot = new GraphQLObjectType({
 			},
 			where: (usersTable, args, context) => {
 				if (args.id) {
-					let userId = args.id
-					let operator = '='
-					if (userId[ 0 ] === '!') {
-						operator = '!='
-						userId = userId.slice( 1 )
-					}
-					return `${usersTable}.id ${operator} ${userId}`
+					let opts = helpers.searchString( args.id )
+					return `${usersTable}.id ${opts.operator} ${opts.search}`
 				}
 			},
 		},
 		knowledges: {
 			type: new GraphQLList( Knowledge ),
+			args: {
+				search: { type: GraphQLString },
+			},
 			resolve: (parent, args, context, resolveInfo) => {
 				return joinMonster( resolveInfo, {}, sql => {
 					console.log( sql )
 					return db.query( sql )
 				})
-			}
+			},
+			where: (knowledgeTable, args, context) => {
+				if (args.search) {
+					return `to_tsvector(${knowledgeTable}.problem) @@  to_tsquery('${args.search}')`
+				}
+			},
 		},
 	})
 })

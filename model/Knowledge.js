@@ -4,6 +4,8 @@ const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt } = require( '
 
 const User = require( './User' )
 
+const helpers = require( './helpers' )
+
 const Knowledge = new GraphQLObjectType({
 	name: 'Knowledge',
 	sqlTable: '"Knowledge"',
@@ -22,8 +24,17 @@ const Knowledge = new GraphQLObjectType({
 		},
 		author: {
 			type: User,
-			sqlJoin: (knowledgeTable, authorTable) => `${knowledgeTable}."idAuthor" = ${authorTable}."id"`
-		}
+			args: {
+				id: { type: GraphQLString },
+			},
+			sqlJoin: (knowledgeTable, authorTable) => `${knowledgeTable}."idAuthor" = ${authorTable}."id"`,
+			where: (usersTable, args, context) => {
+				if (args.id) {
+					let opts = helpers.searchString( args.id )
+					return `${usersTable}.id ${opts.operator} ${opts.search}`
+				}
+			}
+		},
 	})
 })
 
