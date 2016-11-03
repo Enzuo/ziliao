@@ -16,13 +16,17 @@
 			"objectsInObjects": false
 		}],*/
 
-		"func-call-spacing": ["error", "never"], // fn() : no space between fn and () 
-		"space-before-function-paren": ["error", "always"], // function name () : space between name and () 
-		"keyword-spacing": ["error", { "before": true, "after" : true }],
-		"space-before-blocks": ["error", "always"],
+		"func-call-spacing": ["warn", "never"], // fn() : no space between fn and () 
+		"space-before-function-paren": ["warn", "always"], // function name () : space between name and () 
+		"keyword-spacing": ["warn", { "before": true, "after" : true }],
+		"space-before-blocks": ["warn", "always"],
 
-		"aero/aero": ["error", "always", { "loose" : ["()"], "inside" : ["{}"]}],
+		"aero/aero": ["warn", "always", { "loose" : ["()"], "inside" : ["{}"]}],
+		"indent": ["warn", "tab"],
 
-		"indent": ["error", "tab"]
+		"no-unreachable": ["error"],
+		"no-magic-numbers": ["warn"],
+		"no-unused-labels": ["error"],
+		"no-unused-vars": ["warn"]
 	}
 }
