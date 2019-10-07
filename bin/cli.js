@@ -6,7 +6,7 @@ const args = require( 'args' )
 const chalk = require( 'chalk' )
 const config = require( 'config' )
 const promptly = require( 'promptly' )
-const postgrator = require( 'postgrator' )
+const Postgrator = require( 'postgrator' )
 
 const info = chalk.blue.bold
 const error = chalk.red.bold
@@ -16,9 +16,9 @@ const migrationsDir = './migrations'
 args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, opts) => {
 
 	const database = config.get( 'database' )
-	postgrator.setConfig({
+	const postgrator = new Postgrator({
 		migrationDirectory: migrationsDir,
-		schemaTable: 'schemaversion',
+		schemaTable: 'public.schemaversion',
 		driver: 'pg',
 		host: database.host,
 		port: database.port,
@@ -31,12 +31,19 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 	switch (true) {
 	case /^\d+$/.test( subcommand ):
 		console.log( info( 'migrating base to version', subcommand ))
-		getDatabaseVersions().then( (versions) => {
-			return promptly.confirm( `Migrate from ${versions.current} to ${subcommand} ? (y/n)` )
+		postgrator.getDatabaseVersion().then( (version) => {
+			return promptly.confirm( `Migrate from ${version} to ${subcommand} ? (y/n)` )
 		}).then( (shouldContinue) => {
-			doMigration( subcommand, shouldContinue )
+			if (shouldContinue) {
+				postgrator.migrate( subcommand ).then()
+					.then( appliedMigrations => console.log( appliedMigrations ))
+					.catch( error => console.log( error ))
+			}
 		}).catch( (err) => {
 			console.log( error( err ))
+			postgrator.migrate().then()
+				.then( appliedMigrations => console.log( appliedMigrations ))
+  			.catch( error => console.log( error ))
 		})
 		break
 
@@ -64,12 +71,23 @@ args.command( 'migrate', 'Migrate the database (up,down,create)', (name, sub, op
 
 	default:
 		console.log( info( 'migrating base to last version' ))
-		getDatabaseVersions().then( (versions) => {
-			return promptly.confirm( `Migrate from ${versions.current} to ${versions.max} ? (y/n)` )
+		var maxVersion
+		postgrator
+			.getMaxVersion()
+			.then( version => maxVersion = version )
+		postgrator.getDatabaseVersion().then( (version) => {
+			return promptly.confirm( `Migrate from ${version} to ${maxVersion} ? (y/n)` )
 		}).then( (shouldContinue) => {
-			doMigration( 'max', shouldContinue )
+			if (shouldContinue) {
+				postgrator.migrate().then()
+					.then( appliedMigrations => console.log( appliedMigrations ))
+					.catch( error => console.log( error ))
+			}
 		}).catch( (err) => {
 			console.log( error( err ))
+			postgrator.migrate().then()
+				.then( appliedMigrations => console.log( appliedMigrations ))
+				.catch( error => console.log( error ))
 		})
 	}
 })
@@ -84,24 +102,10 @@ if (Object.keys( flags ).length !== 0) {
  * Private helper functions
  ***************************************/
 
-/**
- * return versions { current, max }
- */
-function getDatabaseVersions () {
-	return new Promise( (resolve, reject) => {
-		postgrator.getVersions( (err, versions) => {
-			if (err) {
-				return reject( err )
-			}
-			resolve( versions )
-		})
-	})
-}
-
 function endConnection (msg) {
-	postgrator.endConnection(() => {
+	// postgrator.endConnection(() => {
 		console.log( msg )
-	})
+	// })
 }
 
 function titleValidator (title) {
@@ -112,26 +116,6 @@ function titleValidator (title) {
 		throw new Error( 'The title contains special characters' )
 	}
 	return title
-}
-
-/**
- * execute the migration or abort them
- * end the migration process
- */
-function doMigration (target, execute) {
-	if (execute) {
-		postgrator.migrate( target , (err) => {
-			if (err) {
-				endConnection( error( err ))
-			}
-			else {
-				endConnection( success( 'Database migrated' ))
-			}
-		})
-	}
-	else {
-		endConnection( error( 'Migration aborted' ))
-	}
 }
 
 /**
