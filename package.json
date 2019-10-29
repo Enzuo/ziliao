@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "nodemon": "^1.11.0",
-    "eslint": "^3.8.1",
+    "eslint": "^6.6.0",
     "eslint-plugin-aero": "file:../eslint-plugin-aero"
   }
 }
